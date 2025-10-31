@@ -4,6 +4,8 @@
 
 **Framework:** Your choice.
 
+---
+
 ## Background
 
 You are building a small slice of an API for a mobile app that lets abuse victims submit evidence (video, audio, image, text). The API must make sure users only see their own evidence and that we can produce a simple report to share with authorities.
@@ -75,11 +77,25 @@ Response example:
       "id": "...",
       "title": "...",
       "media_type": "...",
+      "file": {...},
       "created_at": "..."
     }
   ]
 }
 ```
+
+Users may need to share their evidence report with trusted third parties such as authorities or counsellors.
+
+To protect privacy, this must be done securely via a temporary, one-time link that automatically expires after use.
+
+Endpoint `POST /reports/share`
+Endpoint `GET /share/:token`
+
+What it should do:
+
+- It should return a shareable link: `"share_url": "http://localhost:3000/share/<token>"`
+- The token must be unguessable and expire after 5 minutes (or sooner if viewed once)
+- If you successfully view the shared link you should see the full report
 
 ### 5. Security Considerations
 
