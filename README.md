@@ -1,0 +1,92 @@
+**Title:** Secure Evidence Submission API
+
+**Language:** JavaScript (Node.js). TypeScript is fine if you prefer.
+
+**Framework:** Your choice.
+
+## Background
+
+You are building a small slice of an API for a mobile app that lets abuse victims submit evidence (video, audio, image, text). The API must make sure users only see their own evidence and that we can produce a simple report to share with authorities.
+
+We are not building real file uploads. We are simulating them.
+
+## Requirements
+
+### 1. Authentication (simplified)
+
+- The API must require a header: `Authorization: Bearer test-user`
+- If the header is missing or wrong, return `401`
+- Treat the token value as the user id (so we can simulate multiple users later).
+
+### 2. Create Evidence
+
+Endpoint `POST /evidence`
+
+Body example:
+
+```json
+{
+  "title": "This is an evidence video",
+  "media_type": "video",
+  "file": {
+    "name": "TestFile",
+    "extension": "mp4",
+    "size": 1200000
+  }
+}
+```
+
+#### What it should do:
+
+- Validate required fields (`title`, `media_type` etc)
+- Accept media types (`video`, `image`, `voice_note`, `text`). Reject others with `400`.
+- Create an in-memory evidence record:
+  - id (string, e.g. uuid or incremental)
+  - user_id (from the token)
+  - title
+  - media_type
+  - secure_reference (simulate storage path, e.g. evidence/<user_id>/<random> )
+  - created_at (ISO string)
+- Return `201` with the created object
+
+### 3. List Evidence
+
+Endpoint `GET /evidence`
+
+What it should do:
+
+- Read the user id from the token
+- Return only evidence for that user
+- Sort newest first
+- Return 200 with an array
+
+### 4. Generate Report
+
+Endpoint `GET /reports`
+
+Response example:
+
+```json
+{
+  "user_id": "test-user",
+  "generated_at": "2025-10-31T12:00:00Z",
+  "evidence": [
+    {
+      "id": "...",
+      "title": "...",
+      "media_type": "...",
+      "created_at": "..."
+    }
+  ]
+}
+```
+
+### 5. Security Considerations
+
+In code or in a short comment/README, explain:
+
+- Where you would generate a signed URL or encrypted reference for the media
+- That evidence must always be scoped to the authenticated user
+- That in production this would go to object storage (S3/GCS/Azure) and not memory
+- Where and how this would upload and download large media types to object storage
+- Where you would limit the hijacking of a signed URL and how this would be achieved
