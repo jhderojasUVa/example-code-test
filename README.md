@@ -62,7 +62,7 @@ What it should do:
 - Sort newest first
 - Return 200 with an array
 
-### 4. Generate Report
+### 4. Generate & Share Report
 
 Endpoint `GET /reports`
 
