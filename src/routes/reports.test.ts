@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../index';
 import { evidence } from '../services/evidenceService';
+import { createShareToken } from '../services/reportService';
 
 describe('Reports API', () => {
   beforeEach(() => {
@@ -53,12 +54,7 @@ describe('Reports API', () => {
         },
       });
 
-    const shareRes = await request(app)
-      .post('/reports/share')
-      .set('Authorization', 'Bearer test-user');
-
-    const shareUrl = shareRes.body.share_url;
-    const token = shareUrl.split('/').pop();
+    const token = createShareToken('test-user');
 
     const res = await request(app).get(`/share/${token}`);
 
@@ -73,14 +69,19 @@ describe('Reports API', () => {
   });
 
   it('should not get a shared report twice', async () => {
-    const shareRes = await request(app)
-      .post('/reports/share')
-      .set('Authorization', 'Bearer test-user');
-
-    const shareUrl = shareRes.body.share_url;
-    const token = shareUrl.split('/').pop();
+    const token = createShareToken('test-user');
 
     await request(app).get(`/share/${token}`);
+    const res = await request(app).get(`/share/${token}`);
+
+    expect(res.status).toBe(404);
+  });
+
+  it('should not get a shared report with an expired token', async () => {
+    const token = createShareToken('test-user', 1); // expires in 1ms
+
+    await new Promise(r => setTimeout(r, 10));
+
     const res = await request(app).get(`/share/${token}`);
 
     expect(res.status).toBe(404);

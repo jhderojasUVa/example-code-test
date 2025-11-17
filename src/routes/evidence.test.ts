@@ -54,6 +54,16 @@ describe('Evidence API', () => {
     expect(res.status).toBe(400);
   });
 
+  it('should not create evidence with missing fields', async () => {
+    const res = await request(app)
+      .post('/evidence')
+      .set('Authorization', 'Bearer test-user')
+      .send({
+        title: 'Test Evidence',
+      });
+    expect(res.status).toBe(400);
+  });
+
   it('should get evidence for a user', async () => {
     await request(app)
       .post('/evidence')
