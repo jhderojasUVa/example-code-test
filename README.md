@@ -99,10 +99,19 @@ What it should do:
 
 ### 5. Security Considerations
 
-In code or in a short comment/README, explain:
+Here are some important security considerations for this API:
 
-- Where you would generate a signed URL or encrypted reference for the media
-- That evidence must always be scoped to the authenticated user
-- That in production this would go to object storage (S3/GCS/Azure) and not memory
-- Where and how this would upload and download large media types to object storage
-- Where you would limit the hijacking of a signed URL and how this would be achieved
+-   **Signed URLs for Media:** A signed URL or encrypted reference for media would be generated in the `createEvidence` function, right after the file metadata is validated and before the evidence record is created. When a user wants to upload a file, the API would first create a secure, short-lived signed URL that grants temporary write access to a specific path in the object storage (e.g., `evidence/<user_id>/<file_id>`). This URL would be returned to the client, which then uses it to upload the file directly to the storage provider. A similar process would be used for downloads, where a read-access signed URL is generated when a user requests to view their evidence.
+
+-   **Evidence Scoped to User:** Evidence must always be scoped to the authenticated user. This is enforced in the `getEvidence` function by filtering evidence records based on the `user_id` obtained from the authentication token. This ensures that a user can only ever access their own data. Every database query that fetches evidence must include a `WHERE user_id = :current_user_id` clause.
+
+-   **Production Object Storage:** In a production environment, all media files would be stored in a secure object storage service like Amazon S3, Google Cloud Storage (GCS), or Azure Blob Storage, not in memory. The in-memory `evidence` array is for simulation purposes only. The database would store metadata about the evidence, including the secure reference to the file in the object storage.
+
+-   **Large Media Uploads/Downloads:** For large media types, the client would upload and download files directly to and from the object storage using the signed URLs. This avoids routing large files through the API server, which would be inefficient and costly. The process would be:
+    1.  **Upload:** The client requests a signed URL from the API to upload a file. The API generates the URL and returns it. The client then uploads the file directly to the object storage provider using that URL.
+    2.  **Download:** The client requests to view a piece of evidence. The API generates a signed URL for the corresponding file in the object storage and returns it to the client. The client then uses this URL to download the file directly.
+
+-   **Limiting Signed URL Hijacking:** To limit the hijacking of a signed URL, several measures would be implemented:
+    1.  **Short Expiration Times:** Signed URLs should have a very short expiration time (e.g., 5-15 minutes), just long enough for the client to complete the upload or download.
+    2.  **One-Time Use Tokens:** For sharing reports, the token in the `/share/:token` URL is designed to be a one-time use token. Once the link is visited, the token is invalidated in the database, preventing any further access.
+    3.  **CORS and IP Pinning:** The storage provider can be configured with Cross-Origin Resource Sharing (CORS) policies to only allow uploads from the application's domain. For highly sensitive data, the signed URL could be pinned to the client's IP address, although this can be problematic with dynamic IPs.
