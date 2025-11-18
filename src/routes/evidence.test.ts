@@ -108,4 +108,37 @@ describe('Evidence API', () => {
     expect(res.status).toBe(200);
     expect(res.body.length).toBe(0);
   });
+
+  it('should return evidence sorted by creation date', async () => {
+    await request(app)
+      .post('/evidence')
+      .set('Authorization', 'Bearer test-user')
+      .send({
+        title: 'First Evidence',
+        media_type: 'video',
+        file: { name: 'test.mp4', extension: 'mp4', size: 12345 },
+      });
+
+    // Wait a bit to ensure different timestamps
+    await new Promise(r => setTimeout(r, 10));
+
+    const secondEvidence = await request(app)
+      .post('/evidence')
+      .set('Authorization', 'Bearer test-user')
+      .send({
+        title: 'Second Evidence',
+        media_type: 'image',
+        file: { name: 'test.jpg', extension: 'jpg', size: 6789 },
+      });
+
+    const res = await request(app)
+      .get('/evidence')
+      .set('Authorization', 'Bearer test-user');
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(2);
+    expect(res.body[0].title).toBe('Second Evidence');
+    expect(res.body[1].title).toBe('First Evidence');
+    expect(res.body[0].id).toBe(secondEvidence.body.id);
+  });
 });

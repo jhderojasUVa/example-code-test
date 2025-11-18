@@ -123,3 +123,34 @@ In code or in a short comment/README, explain:
   - **Short Expiration Time:** The signed URLs would have a short expiration time (e.g., 5 minutes). This is implemented in the `reportService.ts` for the shareable report link.
   - **One-Time Use:** The shareable report link is a one-time use link. This is implemented in the `reportService.ts` by marking the token as used after it has been accessed once.
   - **IP Pinning:** For highly sensitive data, the signed URL could be pinned to the IP address of the user who requested it. This would prevent the URL from being used by anyone else. This would be implemented by the cloud storage provider's policy options.
+
+## Running the Server
+
+To run the server, use the following command:
+
+```bash
+npm start
+```
+
+This will start the server on `http://localhost:3000` (or the port specified in `src/index.ts`).
+
+## Running the Tests
+
+To run the tests, use the following command:
+
+```bash
+npm test
+```
+
+This will run all the tests using Jest.
+
+## Code Structure
+
+The code is structured as follows:
+
+-   `src/controllers`: Contains the route handlers for the API. These files are responsible for handling incoming requests, calling the appropriate services, and sending responses.
+-   `src/services`: Contains the business logic of the application. These files are responsible for interacting with the data layer and performing any necessary computations.
+-   `src/routes`: Contains the route definitions for the API. These files map the API endpoints to the appropriate controller handlers. It also contains the tests for the routes.
+-   `src/middleware`: Contains the middleware for the application. This includes the authentication middleware.
+-   `src/utils`: Contains helper functions that can be used throughout the application.
+-   `src/index.ts`: The entry point for the application. This file creates the Express server and sets up the middleware and routes.

@@ -31,6 +31,44 @@ describe('Reports API', () => {
     expect(res.body.evidence.length).toBe(1);
   });
 
+  it('should generate an empty report if user has no evidence', async () => {
+    const res = await request(app)
+      .get('/reports')
+      .set('Authorization', 'Bearer test-user');
+
+    expect(res.status).toBe(200);
+    expect(res.body.user_id).toBe('test-user');
+    expect(res.body.evidence.length).toBe(0);
+  });
+
+  it('should generate a share link and allow fetching the report', async () => {
+    await request(app)
+      .post('/evidence')
+      .set('Authorization', 'Bearer test-user')
+      .send({
+        title: 'Shareable Evidence',
+        media_type: 'text',
+        file: { name: 'report.txt', extension: 'txt', size: 100 },
+      });
+
+    const shareRes = await request(app)
+      .post('/reports/share')
+      .set('Authorization', 'Bearer test-user');
+
+    expect(shareRes.status).toBe(200);
+    expect(shareRes.body.share_url).toBeDefined();
+
+    // Extract the token from the URL
+    const shareUrl = new URL(shareRes.body.share_url);
+    const token = shareUrl.pathname.split('/').pop();
+
+    const reportRes = await request(app).get(`/share/${token}`);
+    expect(reportRes.status).toBe(200);
+    expect(reportRes.body.user_id).toBe('test-user');
+    expect(reportRes.body.evidence.length).toBe(1);
+    expect(reportRes.body.evidence[0].title).toBe('Shareable Evidence');
+  });
+
   it('should generate a share link', async () => {
     const res = await request(app)
       .post('/reports/share')
