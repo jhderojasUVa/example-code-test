@@ -115,3 +115,38 @@ Here are some important security considerations for this API:
     1.  **Short Expiration Times:** Signed URLs should have a very short expiration time (e.g., 5-15 minutes), just long enough for the client to complete the upload or download.
     2.  **One-Time Use Tokens:** For sharing reports, the token in the `/share/:token` URL is designed to be a one-time use token. Once the link is visited, the token is invalidated in the database, preventing any further access.
     3.  **CORS and IP Pinning:** The storage provider can be configured with Cross-Origin Resource Sharing (CORS) policies to only allow uploads from the application's domain. For highly sensitive data, the signed URL could be pinned to the client's IP address, although this can be problematic with dynamic IPs.
+
+## Getting Started
+
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Running Tests
+
+To run the test suite, use the following command:
+
+```bash
+npm test
+```
+
+## Code Structure
+
+The code is structured as follows:
+
+-   `src/controllers`: Contains the route handlers for the API. These files are responsible for handling incoming requests, calling the appropriate services, and sending responses. You will encounter files like `evidenceController.ts` and `reportsController.ts` here.
+-   `src/services`: Contains the business logic of the application. These files are responsible for interacting with the data layer and performing any necessary computations. You will encounter files like `evidenceService.ts` and `reportService.ts` here.
+-   `src/routes`: Contains the route definitions for the API. These files map the API endpoints to the appropriate controller handlers. It also contains the tests for the routes. You will encounter files like `evidence.ts` and `reports.ts` here.
+-   `src/middleware`: Contains the middleware for the application. This includes the authentication middleware in `auth.ts`.
+-   `src/utils`: Contains helper functions that can be used throughout the application.
+-   `src/index.ts`: The entry point for the application. This file creates the Express server and sets up the middleware and routes.
