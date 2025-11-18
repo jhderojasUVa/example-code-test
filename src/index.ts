@@ -2,6 +2,7 @@ import express from 'express';
 import { authMiddleware } from './middleware/auth';
 import evidenceRoutes from './routes/evidence';
 import reportsRoutes from './routes/reports';
+import { getSharedReport } from './controllers/reportsController';
 
 // This is the main entry point of the application.
 
@@ -13,6 +14,9 @@ const port = process.env.PORT || 3000;
 // Use the express.json middleware to parse JSON bodies.
 app.use(express.json());
 
+// Route to get a shared report using a secure token.
+app.get('/share/:token', getSharedReport);
+
 // Use the authentication middleware for all routes.
 app.use(authMiddleware);
 
@@ -22,9 +26,11 @@ app.use('/evidence', evidenceRoutes);
 app.use('/reports', reportsRoutes);
 
 // Start the server and listen on the specified port.
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
 
 // Export the app for testing purposes.
 export default app;
