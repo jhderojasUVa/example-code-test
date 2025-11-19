@@ -136,19 +136,6 @@ This will start the server on `http://localhost:3000` (or the port specified in 
 
 ## Running the Tests
 
-To run the tests, use the following command:
-
-```bash
-npm test
-```
-
-This will run all the tests using Jest.
-
-## Code Structure
-
-The code is structured as follows:
-
--   `src/controllers`: Contains the route handlers for the API. These files are responsible for handling incoming requests, calling the appropriate services, and sending responses.
 -   `src/services`: Contains the business logic of the application. These files are responsible for interacting with the data layer and performing any necessary computations.
 -   `src/routes`: Contains the route definitions for the API. These files map the API endpoints to the appropriate controller handlers. It also contains the tests for the routes.
 -   `src/middleware`: Contains the middleware for the application. This includes the authentication middleware.
