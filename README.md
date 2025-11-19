@@ -140,6 +140,44 @@ To run the test suite, use the following command:
 npm test
 ```
 
+## Development Workflow
+
+### Linting and Formatting
+This project uses ESLint for linting. Linting is automatically checked before every commit using Husky and lint-staged.
+
+To run linting manually:
+```bash
+npm run lint
+```
+
+### Conventional Commits
+We enforce [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. This helps in generating changelogs and semantic versioning.
+
+Commit messages must follow the format:
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Common types:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `chore`: Changes to the build process or auxiliary tools and libraries such as documentation generation
+
+Example:
+```bash
+git commit -m "feat: add evidence upload endpoint"
+```
+
+
 ## Code Structure
 
 The code is structured as follows:
